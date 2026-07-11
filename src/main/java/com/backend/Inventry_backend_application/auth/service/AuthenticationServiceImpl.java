@@ -4,6 +4,7 @@ package com.backend.Inventry_backend_application.auth.service;
 import com.backend.Inventry_backend_application.auth.requests.LoginRequest;
 import com.backend.Inventry_backend_application.auth.responses.LoginResponse;
 import com.backend.Inventry_backend_application.model.User;
+import com.backend.Inventry_backend_application.security.JwtTokenService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

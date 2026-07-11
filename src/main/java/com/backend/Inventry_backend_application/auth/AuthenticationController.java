@@ -5,6 +5,7 @@ import com.backend.Inventry_backend_application.auth.requests.LoginRequest;
 import com.backend.Inventry_backend_application.auth.responses.LoginResponse;
 import com.backend.Inventry_backend_application.auth.service.AuthenticationService;
 import com.backend.Inventry_backend_application.request.RegisterTenantRequest;
+import com.backend.Inventry_backend_application.service.TenantService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

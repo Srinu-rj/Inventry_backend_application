@@ -17,6 +17,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import java.awt.print.Pageable;
 import java.time.LocalDate;
 import java.util.Optional;
 
@@ -90,7 +91,7 @@ public class StockMvtServiceImpl implements StockMvtService {
     @Override
     public PageResponse<StockMvtResponse> findAllByProductId(final String productId, final int page, final int size) {
         final PageRequest pageRequest = PageRequest.of(page, size);
-        final Page<StockMvt> stockMvts = this.stockMvtRepository.findAllByProductId(productId, pageRequest);
+        final Page<StockMvt> stockMvts = this.stockMvtRepository.findAllByProductId(productId, (Pageable) pageRequest);
         final Page<StockMvtResponse> stockMvtResponses = stockMvts.map(this.stockMvtMapper::toResponse);
         return PageResponse.of(stockMvtResponses);
     }

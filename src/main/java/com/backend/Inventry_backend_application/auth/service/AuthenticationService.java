@@ -1,5 +1,6 @@
 package com.backend.Inventry_backend_application.auth.service;
 
+import com.backend.Inventry_backend_application.auth.requests.LoginRequest;
 import com.backend.Inventry_backend_application.auth.responses.LoginResponse;
 import org.springframework.stereotype.Service;
 

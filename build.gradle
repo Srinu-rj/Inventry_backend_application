@@ -49,8 +49,8 @@ dependencies {
     //TODO SECURITY JWT SWAGGER
     implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.2'
-    implementation group: 'io.jsonwebtoken', name: 'jjwt-api', version: '0.11.5'
-    runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-jackson', version: '0.11.5'
+    implementation group: 'io.jsonwebtoken', name: 'jjwt-api', version: '0.12.6'
+    runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-jackson', version: '0.12.6'
     runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-impl', version: '0.13.0'
     compileOnly "io.swagger.core.v3:swagger-annotations:2.2.15"
     //TODO RATE LIMIT
@@ -70,6 +70,7 @@ dependencies {
 //    TODO MONITERING
     runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
     //TODO FLYWAY MIGRATION
+    implementation 'org.flywaydb:flyway-core'
     implementation 'org.springframework.boot:spring-boot-starter-flyway'
     implementation 'org.flywaydb:flyway-database-postgresql'
     runtimeOnly 'org.postgresql:postgresql'

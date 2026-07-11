@@ -1,6 +1,7 @@
 package com.backend.Inventry_backend_application.security;
 
 
+import com.backend.Inventry_backend_application.exceptions.UnauthorizedException;
 import com.backend.Inventry_backend_application.properties.JwtProperties;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
