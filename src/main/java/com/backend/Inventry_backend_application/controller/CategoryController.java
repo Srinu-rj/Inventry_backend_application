@@ -1,42 +1,69 @@
 package com.backend.Inventry_backend_application.controller;
 
+
+import com.backend.Inventry_backend_application.common.PageResponse;
 import com.backend.Inventry_backend_application.request.CategoryRequest;
+import com.backend.Inventry_backend_application.response.CategoryResponse;
 import com.backend.Inventry_backend_application.service.CategoryService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import lombok.AllArgsConstructor;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequiredArgsConstructor
 @RequestMapping("/api/v1/categories")
+@RequiredArgsConstructor
+@Tag(name = "Category", description = "Category API")
 public class CategoryController {
 
-    final private CategoryService categoryService;
+    private final CategoryService service;
 
     @PostMapping
-    public ResponseEntity<?> saveCategory(@Valid @RequestBody final CategoryRequest request) {
-        this.categoryService.create(request);
+    public ResponseEntity<Void> createCategory(
+            @RequestBody
+            @Valid final CategoryRequest request
+    ) {
+        this.service.create(request);
         return ResponseEntity.ok().build();
     }
 
-    @PutMapping("/{category_id}")
-    public ResponseEntity<?> updateCategory(@Valid @RequestBody final CategoryRequest request,@PathVariable("category_id") final String id) {
-        this.categoryService.update(id, request);
-        return ResponseEntity.ok().build();
+
+    @PutMapping("/{category-id}")
+    public ResponseEntity<Void> updateCategory(
+            @RequestBody
+            @Valid final CategoryRequest request,
+            @PathVariable("category-id")
+            @NotNull(message = "Category ID cannot be null") final String id
+    ) {
+        this.service.update(id, request);
+        return ResponseEntity.accepted().build();
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<?> findByID(@PathVariable final String id) {
-        this.categoryService.findById(id);
-        return ResponseEntity.ok(this.categoryService.findById(id));
+    @GetMapping("/{category-id}")
+    public ResponseEntity<CategoryResponse> findCategoryById(
+            @PathVariable("category-id")
+            @NotNull(message = "Category ID cannot be null") final String id
+    ) {
+        return ResponseEntity.ok(this.service.findById(id));
     }
 
-    @DeleteMapping("/{category_id}")
-    public ResponseEntity<?>deleteById(@PathVariable("category_id") final String id){
-        this.categoryService.delete(id);
-        return ResponseEntity.ok().build();
+    @GetMapping
+    public ResponseEntity<PageResponse<CategoryResponse>> findAllCategories(
+            @RequestParam(name = "page", defaultValue = "0") final int page,
+            @RequestParam(name = "size", defaultValue = "10") final int size
+    ) {
+        return ResponseEntity.ok(this.service.findAll(page, size));
+    }
+
+    @DeleteMapping("/{category-id}")
+    public ResponseEntity<Void> deleteCategory(
+            @PathVariable("category-id")
+            @NotNull(message = "Category ID cannot be null") final String id
+    ) {
+        this.service.delete(id);
+        return ResponseEntity.noContent().build();
     }
 
 }

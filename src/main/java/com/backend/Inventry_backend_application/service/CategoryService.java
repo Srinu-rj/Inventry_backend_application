@@ -5,6 +5,7 @@ import com.backend.Inventry_backend_application.response.CategoryResponse;
 import org.springframework.stereotype.Service;
 
 @Service
-public interface CategoryService extends BaseService<CategoryRequest, CategoryResponse> {
+public interface CategoryService extends BasicService<CategoryRequest, CategoryResponse> {
+
 
 }

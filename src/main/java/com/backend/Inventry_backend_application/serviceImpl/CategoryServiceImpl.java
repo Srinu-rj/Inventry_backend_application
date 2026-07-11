@@ -1,5 +1,8 @@
 package com.backend.Inventry_backend_application.serviceImpl;
 
+
+import com.backend.Inventry_backend_application.common.PageResponse;
+import com.backend.Inventry_backend_application.exceptions.DuplicateResourceException;
 import com.backend.Inventry_backend_application.mapper.CategoryMapper;
 import com.backend.Inventry_backend_application.model.Category;
 import com.backend.Inventry_backend_application.repository.CategoryRepository;
@@ -9,62 +12,79 @@ import com.backend.Inventry_backend_application.service.CategoryService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@Transactional
 public class CategoryServiceImpl implements CategoryService {
 
-    private final CategoryMapper categoryMapper;
     private final CategoryRepository categoryRepository;
+    private final CategoryMapper categoryMapper;
 
     @Override
-    public void create(CategoryRequest request) {
-        checkIfCategoryExitsByName(request.getName());
-        final Category category = categoryMapper.toEntity(request);
-        this.categoryRepository.save(category);
-    }
+    public void create(final CategoryRequest request) {
+        // check if category already exists
+        checkIfCategoryAlreadyExistsByName(request.getName());
 
-    private void checkIfCategoryExitsByName(final String name) {
-        final Optional<Category> category = categoryRepository.findByNameIgnoreCase(name);
-        if (category.isPresent()) {
-            log.debug("Category Already Exites");
-            throw new RuntimeException("Category Already Exites");
-        }
+        final Category entity = this.categoryMapper.toEntity(request);
+        this.categoryRepository.save(entity);
+
     }
 
     @Override
     public void update(final String id, final CategoryRequest request) {
-        final Optional<Category> exitsCategory = this.categoryRepository.findById(id);
-        if (exitsCategory.isPresent()) {
-            log.debug("Category Already Exites");
-            throw new RuntimeException("Category Already Exites");
+        // check if category already exists by ID
+        final Optional<Category> existingCategory = this.categoryRepository.findById(id);
+        if (existingCategory.isEmpty()) {
+            log.debug("Category does not exist");
+            throw new EntityNotFoundException("Category does Not exist");
         }
-        final Category category = exitsCategory.get();
-        //TODO CHECK IF CATEGORY IS EXITS
-        if (category.getName().equalsIgnoreCase(request.getName())) {
-            checkIfCategoryExitsByName(request.getName());
+
+        // check if category already exists
+        if (!existingCategory.get().getName().equalsIgnoreCase(request.getName())) {
+            checkIfCategoryAlreadyExistsByName(request.getName());
         }
-        final Category updateCategory = categoryMapper.toEntity(request);
-        updateCategory.setId(id);
-        this.categoryRepository.save(updateCategory);
+
+        final Category categoryToUpdate = this.categoryMapper.toEntity(request);
+        categoryToUpdate.setId(id);
+        this.categoryRepository.save(categoryToUpdate);
+
     }
 
     @Override
-    public CategoryResponse findById(String id) {
+    public PageResponse<CategoryResponse> findAll(final int page, final int size) {
+        final PageRequest pageRequest = PageRequest.of(page, size);
+        final Page<Category> categories = this.categoryRepository.findAll(pageRequest);
+        final Page<CategoryResponse> categoryResponses = categories.map(this.categoryMapper::toResponse);
+        return PageResponse.of(categoryResponses);
+    }
+
+    @Override
+    public CategoryResponse findById(final String id) {
         return this.categoryRepository.findById(id)
                 .map(this.categoryMapper::toResponse)
-                .orElseThrow(() -> new EntityNotFoundException("Category Not Found"));
+                .orElseThrow(() -> new EntityNotFoundException("Category does not exist"));
     }
 
     @Override
-    public void delete(String id) {
+    public void delete(final String id) {
         final Category category = this.categoryRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Category Not Found"));
+                               .orElseThrow(() -> new EntityNotFoundException("Category does not exist"));
         this.categoryRepository.delete(category);
+    }
 
+    private void checkIfCategoryAlreadyExistsByName(final String categoryName) {
+        final Optional<Category> category = this.categoryRepository.findByNameIgnoreCase(categoryName);
+        if (category.isPresent()) {
+            log.debug("Category already exists");
+            throw new DuplicateResourceException("Category already exists");
+        }
     }
 }
